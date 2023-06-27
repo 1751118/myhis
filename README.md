@@ -30,7 +30,6 @@ grant replication slave on *.* to 'xiaoming'@'%' identified by 'Root@123456';
 show master status;
 ~~~
 
-![image-20230509160816256](C:\Users\youmeng\AppData\Roaming\Typora\typora-user-images\image-20230509160816256.png)
 
 #### （二）从库配置
 
@@ -55,7 +54,6 @@ change master to master_host='192.168.179.134',master_user='xiaoming',master_pas
 start slave;（开启一个线程跑 slave）
 ~~~
 
-![image-20230509161220075](C:\Users\youmeng\AppData\Roaming\Typora\typora-user-images\image-20230509161220075.png)
 
 上面的命令中，master_host为主库电脑的IP，master_user和master_password为刚才主库设置的用户名和密码，master_log_file和master_log_pos为刚才主库查看的master status。
 
@@ -63,5 +61,5 @@ start slave;（开启一个线程跑 slave）
 
 **注意：如果使用本机的两台虚拟机做主从库，可能导致两个mysql服务的uuid相同而主从库不生效*。需要找到任意一台虚拟机的auto.cnf配置文件(一般在"/var/lib/mysql/auto.cnf"），删除该文件，或者更改server-uuid与主库不同即可。若下面两个值均为Yes，说明主从库配置已经生效，对主库的操作也会在从库自动复制一份**
 
-![image-20230509163138382](C:\Users\youmeng\AppData\Roaming\Typora\typora-user-images\image-20230509163138382.png)
+因图片无法显示，若主从库配置讲解不清楚，可以自行去掉该配置，更改项目配置文件，换成单库即可。或者自行查阅资料，完成主从配置。
 
