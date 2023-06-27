@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <link rel="stylesheet" href="../../styles/common.css" />
+  <link rel="stylesheet" href="../../styles/page.css" />
+</head>
+<body>
+   <div class="dashboard-container" id="prescription-app">
+    <div class="container">
+      <div class="tableBar">
+        <el-input
+          v-model="inputPrescription"
+          placeholder="请输入处方id"
+          style="width: 250px"
+          clearable
+          @keyup.enter.native="handleQuery"
+        >
+          <i
+            slot="prefix"
+            class="el-input__icon el-icon-search"
+            style="cursor: pointer"
+            @click="init"
+          ></i>
+        </el-input>
+
+        <div class="tableLab">
+          <span class="span-btn delBut non" @click="deleteHandle('批量')">批量删除</span>
+          <el-button
+                  type="primary"
+                  @click="addPrescription('add')"
+          >
+            + 添加处方
+          </el-button>
+        </div>
+      </div>
+      <el-table
+        :data="tableData"
+        stripe
+        class="tableBox"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column
+          type="selection"
+          width="25"
+        ></el-table-column>
+        <el-table-column
+          prop="id"
+          label="处方id"
+        ></el-table-column>
+        <el-table-column
+          prop="drugs"
+          label="药品"
+        ><template slot-scope="scope">
+          {{ scope.row.drugs.join('，') }}
+        </template>
+        </el-table-column>
+        <el-table-column
+          prop="price"
+          label="价格"
+        >
+          <template slot-scope="scope">
+            <span>￥{{ scope.row.price }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          label="操作"
+          width="160"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <el-button
+              type="success"
+              icon="el-icon-edit"
+              circle
+              @click="addPrescription('edit',scope.row)"
+            >
+            </el-button>
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              circle
+              @click="deleteHandle('单删', scope.row.id)"
+            >
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        class="pageList"
+        :page-sizes="[10, 20, 30, 40]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="counts"
+        @size-change="handleSizeChange"
+        :current-page.sync="page"
+        @current-change="handleCurrentChange"
+      ></el-pagination>
+
+      <!--    编辑、新增处方信息页面-->
+      <el-dialog
+         :title="opTitle"
+         :visible.sync="dialogVisible"
+         :before-close="closeHandle"
+         width="30%"
+         :modal="false"
+      >
+        <el-form
+                :inline="false"
+                label-width="180px"
+                class="demo-ruleForm"
+        >
+          <el-form-item prop="drugs" label="所包含药物">
+            <el-input v-model="drugsStr" placeholder="请输入所包含药物" maxlength="100"/>
+          </el-form-item>
+          <el-form-item prop="price" label="处方价格">
+            <el-input v-model="prescriptionForm.price" placeholder="请输入总价格" maxlength="20"/>
+          </el-form-item>
+
+          <div class="subBox address">
+            <el-form-item>
+              <el-button  @click="closeHandle">
+                取消
+              </el-button>
+              <el-button
+                      type="primary"
+                      @click="submitForm(prescriptionForm)"
+              >
+                保存
+              </el-button>
+            </el-form-item>
+          </div>
+        </el-form>
+      </el-dialog>
+
+    </div>
+  </div>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="../../plugins/vue/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="../../plugins/element-ui/index.js"></script>
+    <!-- 引入axios -->
+    <script src="../../plugins/axios/axios.min.js"></script>
+    <script src="../../js/request.js"></script>
+    <script src="../../api/prescription.js"></script>
+    <script src="../../api/hospital.js"></script>
+    <script>
+      new Vue({
+        el: '#prescription-app',
+        data() {
+          return {
+            inputPrescription: '',
+            inputHospital: '',
+            counts: 0,
+            page: 1,
+            pageSize: 10,
+            tableData : [],
+            dishState : '',
+            hospitals:[],
+            checkList: [],
+            opTitle:'',
+            statusButtonType:'danger',
+            dialogVisible: false,
+            drugsStr:'',
+            prescriptionForm: {
+              drugs: [],
+              price: "9.15",
+            },
+            pickerOptions: {
+              disabledDate(time) {
+                return time.getTime() > Date.now();
+              },
+              shortcuts: [{
+                text: '今天',
+                onClick(picker) {
+                  picker.$emit('pick', new Date());
+                }
+              }, {
+                text: '昨天',
+                onClick(picker) {
+                  const date = new Date();
+                  date.setTime(date.getTime() - 3600 * 1000 * 24);
+                  picker.$emit('pick', date);
+                }
+              }, {
+                text: '一周前',
+                onClick(picker) {
+                  const date = new Date();
+                  date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+                  picker.$emit('pick', date);
+                }
+              }]
+            },
+          }
+        },
+        computed: {},
+        created() {
+          this.init()
+        },
+        mounted() {
+        },
+        methods: {
+          async init () {
+            const params = {
+              page: this.page,
+              pageSize: this.pageSize,
+              prescriptionId: this.inputPrescription ? this.inputPrescription : undefined,
+            }
+            await getPrescriptionPage(params).then(res => {
+              if (String(res.code) === '1') {
+                this.tableData = res.data.records || []
+                this.counts = res.data.total
+              }
+            }).catch(err => {
+              this.$message.error('请求出错了：' + err)
+            })
+          },
+          handleQuery() {
+            this.page = 1;
+            this.init();
+          },
+          // 添加
+          addPrescription (st,row) {
+            this.dialogVisible = true
+            if(st === 'add'){
+              this.opTitle = '新增处方'
+              this.prescriptionForm = {
+                drugs: [],
+                price: "9.15",
+              }
+              this.drugsStr = ''
+            }else{
+              this.opTitle = '编辑处方'
+              console.log("row:", row)
+              getPrescriptionById({'id':row.id}).then(res => {
+                  if(res.code === 1){
+                    this.prescriptionForm = res.data
+                    this.drugsStr = this.prescriptionForm.drugs.join("，")
+
+                  }else{
+                    this.$message.success(res.msg)
+                  }
+              })
+            }
+          },
+          //关闭新增、修改对话框
+          closeHandle(){
+            this.dialogVisible = false
+          },
+          // 删除
+          deleteHandle (type, id) {
+            if (type === '批量' && id === null) {
+              if (this.checkList.length === 0) {
+                return this.$message.error('请选择删除对象')
+              }
+            }
+            this.$confirm('确定删除该处方, 是否继续?', '确定删除', {
+              'confirmButtonText': '确定',
+              'cancelButtonText': '取消',
+            }).then(() => {
+              deletePrescription(type === '批量' ? this.checkList.join(',') : id).then(res => {
+                if (res.code === 1) {
+                  this.$message.success('删除成功！')
+                  this.handleQuery()
+                } else {
+                  this.$message.error(res.msg || '操作失败')
+                }
+              }).catch(err => {
+                this.$message.error('请求出错了：' + err)
+              })
+            })
+          },
+          //提交表单
+          submitForm(prescriptionForm){
+            this.prescriptionForm.drugs = this.drugsStr.split("，")
+            if(this.opTitle === "新增处方"){
+              addPrescription(prescriptionForm).then(res => {
+                if(res.code === 1){
+                  this.$message.success("处方添加成功！")
+                  this.init()
+                  this.dialogVisible = false;
+                }else{
+                  this.$message.error(res.msg)
+                }
+              }).catch(err => {
+                this.$message.error(err)
+              })
+            }else{
+              editPrescription(prescriptionForm).then(res => {
+                if(res.code === 1){
+                  this.$message.success("处方信息修改成功！")
+                  this.init()
+                  this.dialogVisible = false;
+                }else{
+                  this.$message.error(res.msg)
+                }
+              }).catch(err => {
+                this.$message.error(err)
+              })
+            }
+          },
+          //状态更改
+          statusHandle (row) {
+            let params = {}
+            if (typeof row === 'string' ){
+              if (this.checkList.length == 0){
+                this.$message.error('批量操作，请先勾选操作菜品！')
+                return false
+              }
+              params.ids = this.checkList.join(',')
+              params.status = row
+            } else {
+              params.ids = row.id
+              params.status = row.status ? '0' : '1'
+            }
+            this.$confirm('确认更改该处方状态?', '提示', {
+              'confirmButtonText': '确定',
+              'cancelButtonText': '取消',
+              'type': 'warning'
+            }).then(() => {
+              // 起售停售---批量起售停售接口
+              prescriptionStatusByStatus(params).then(res => {
+                if (res.code === 1) {
+                  this.$message.success('处方状态已经更改成功！')
+                  this.handleQuery()
+                } else {
+                  this.$message.error(res.msg || '操作失败')
+                }
+              }).catch(err => {
+                  this.$message.error('请求出错了：' + err)
+              })
+            })
+          },
+
+          // 全部操作
+          handleSelectionChange (val){
+            let checkArr = []
+            val.forEach((n) => {
+              checkArr.push(n.id)
+            })
+            this.checkList = checkArr
+          },
+          handleSizeChange (val) {
+            this.pageSize = val
+            this.init()
+          },
+          handleCurrentChange (val) {
+            this.page = val
+            this.init()
+          }
+        }
+      })
+    </script>
+</body>
+</html>

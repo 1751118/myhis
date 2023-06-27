@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <link rel="stylesheet" href="../../styles/common.css" />
+  <link rel="stylesheet" href="../../styles/page.css" />
+</head>
+<body>
+  <div class="addBrand-container" id="member-add-app">
+    <div class="container">
+      <el-form
+        :inline="false"
+        label-width="180px"
+        class="demo-ruleForm"
+      >
+        <el-form-item label="名称:" prop="name">
+          <el-input v-model="hospitalForm.name" placeholder="请输入名称" maxlength="30"/>
+        </el-form-item>
+
+        <el-form-item label="地址:" prop="address">
+          <el-input v-model="hospitalForm.address" placeholder="请输入地址" maxlength="50"/>
+        </el-form-item>
+
+        <el-form-item label="电话:" prop="telephone">
+          <el-input v-model="hospitalForm.telephone" placeholder="请输入医院电话" maxlength="11"/>
+        </el-form-item>
+
+        <el-form-item label="等级" prop="level">
+          <el-input v-model="hospitalForm.level" placeholder="请输入医院等级" maxlength="11"/>
+        </el-form-item>
+
+        <div class="subBox address">
+          <el-form-item>
+            <el-button  @click="goBack">
+              取消
+            </el-button>
+            <el-button
+              type="primary"
+              @click="submitForm(hospitalForm)"
+            >
+              保存
+            </el-button>
+          </el-form-item>
+        </div>
+      </el-form>
+    </div>
+  </div>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="../../plugins/vue/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="../../plugins/element-ui/index.js"></script>
+    <!-- 引入axios -->
+    <script src="../../plugins/axios/axios.min.js"></script>
+    <script src="../../js/request.js"></script>
+    <script src="../../api/doctor.js"></script>
+    <script src="../../js/validate.js"></script>
+    <script src="../../js/index.js"></script>
+    <script src="../../api/hospital.js"></script>
+    <script src="../../api/user.js"></script>
+
+    <script>
+      const vm = new Vue({
+        el: '#member-add-app',
+        data() {
+          return {
+            id: '',
+            actionType : '',
+            hospitalForm:{
+              name:'同济大学校医院',
+              address:'同济大学',
+              telephone:'65989120',
+              level:'三级',
+            }
+          }
+        },
+        methods: {
+          submitForm(hospitalForm){
+            addHospital(hospitalForm).then(res => {
+              if (res.code === 1) {
+                this.hospitalForm = {
+                  name: '同济大学校医院',
+                  address: '同济大学',
+                  telephone: '65989120',
+                  level: '三级',
+                };
+                this.$message.success("医院信息添加成功!")
+                setTimeout(()=>{
+                  this.goBack()
+                },500)
+                // this.goBack();    //为什么跳转时不显示添加成功这个信息了？添加一个定时器就好了
+              }else{
+                this.$message.error(res.msg)
+              }
+            }).catch(err => {
+              this.$message.error(err)
+            })
+          },
+          goBack(){
+            window.parent.menuHandle({
+              id: '3',
+              url: '/backend/page/hospital/list.html',
+              name: '医院管理'
+            },false)
+          }
+        }
+      })
+    </script>
+</body>
+</html>

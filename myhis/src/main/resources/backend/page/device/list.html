@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <link rel="stylesheet" href="../../styles/common.css" />
+  <link rel="stylesheet" href="../../styles/page.css" />
+</head>
+<body>
+   <div class="dashboard-container" id="device-app">
+    <div class="container">
+      <div class="tableBar">
+        <el-input
+          v-model="inputName"
+          placeholder="请输入设备名称"
+          style="width: 250px"
+          clearable
+          @keyup.enter.native="handleQuery"
+        >
+          <i
+            slot="prefix"
+            class="el-input__icon el-icon-search"
+            style="cursor: pointer"
+            @click="init"
+          ></i>
+        </el-input>
+
+        <div class="tableLab">
+          <span class="span-btn delBut non" @click="deleteHandle('批量')">批量删除</span>
+          <el-button
+            type="primary"
+            @click="optHandle('add')"
+          >
+            + 添加设备
+          </el-button>
+        </div>
+      </div>
+      <el-table
+        :data="tableData"
+        stripe
+        class="tableBox"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column
+          type="selection"
+          width="25"
+        ></el-table-column>
+        <el-table-column
+          prop="id"
+          label="设备id"
+        ></el-table-column>
+
+        <el-table-column
+           prop="name"
+           label="设备名称"
+        ></el-table-column>
+
+        <el-table-column prop="image" label="图片" align="center">
+          <template slot-scope="{ row }">
+            <el-image style="width: auto; height: 40px; border:none;cursor: pointer;"
+                      :src="getImage(row.image)"
+                      :preview-src-list="[ `/common/download?name=${row.image}` ]" >
+              <div slot="error" class="image-slot">
+                <img src="../../images/noImg.png" style="width: auto; height: 40px; border:none;" >
+              </div>
+            </el-image>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+           prop="function"
+           label="设备功能"
+        ></el-table-column>
+
+        <el-table-column
+          prop="price"
+          label="设备价格"
+        >
+        </el-table-column>
+
+        <el-table-column
+           prop="company"
+           label="出厂公司"
+        >
+        </el-table-column>
+
+        <el-table-column
+          label="操作"
+          width="160"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <el-button
+              type="success"
+              size="small"
+              @click="optHandle('edit',scope.row)"
+              circle
+              icon="el-icon-edit"
+            >
+
+            </el-button>
+
+            <el-button
+              type="danger"
+              size="small"
+              @click="deleteHandle('单删', scope.row.id)"
+              circle
+              icon="el-icon-delete"
+            >
+
+            </el-button>
+          </template>
+        </el-table-column>
+
+      </el-table>
+
+      <el-pagination
+        class="pageList"
+        :page-sizes="[10, 20, 30, 40]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="counts"
+        @size-change="handleSizeChange"
+        :current-page.sync="page"
+        @current-change="handleCurrentChange"
+      ></el-pagination>
+
+      <!--    编辑、新增设备信息页面-->
+      <el-dialog
+         :title="opTitle"
+         :visible.sync="dialogVisible"
+         :before-close="closeHandle"
+         width="30%"
+         :modal="false"
+      >
+        <el-form
+                :inline="false"
+                label-width="180px"
+                class="demo-deviceForm"
+        >
+
+          <el-form-item prop="name" label="设备名称">
+            <el-input v-model="deviceForm.name" placeholder="请输入设备名称" maxlength="20"/>
+          </el-form-item>
+
+<!--            上传图片-->
+          <el-form-item
+                  label="设备图片:"
+                  prop="region"
+                  class="uploadImg"
+          >
+            <el-upload
+                    class="avatar-uploader"
+                    action="/common/upload"
+                    :show-file-list="false"
+                    :on-success="handleAvatarSuccess"
+                    :on-change="onChange"
+                    ref="upload"
+            >
+              <img
+                      v-if="imageUrl"
+                      :src="imageUrl"
+                      class="avatar"
+                      style="width: 100px; height: 100px;"
+              ></img>
+              <i
+                      v-else
+                      class="el-icon-plus avatar-uploader-icon"
+              ></i>
+            </el-upload>
+          </el-form-item>
+
+          <el-form-item prop="function" label="设备功能">
+            <el-input v-model="deviceForm.function" placeholder="请输入设备功能" maxlength="20"/>
+          </el-form-item>
+
+          <el-form-item prop="price" label="设备价格">
+            <el-input v-model="deviceForm.price" placeholder="请输入设备价格" maxlength="20"/>
+          </el-form-item>
+
+          <el-form-item prop="company" label="出厂公司">
+            <el-input v-model="deviceForm.company" placeholder="请输入设备出厂公司" maxlength="20"/>
+          </el-form-item>
+
+
+          <div class="subBox address">
+            <el-form-item>
+              <el-button  @click="closeHandle">
+                取消
+              </el-button>
+              <el-button
+                 type="primary"
+                 @click="submitForm(deviceForm)"
+              >
+                保存
+              </el-button>
+            </el-form-item>
+          </div>
+        </el-form>
+      </el-dialog>
+
+    </div>
+  </div>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="../../plugins/vue/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="../../plugins/element-ui/index.js"></script>
+    <!-- 引入axios -->
+    <script src="../../plugins/axios/axios.min.js"></script>
+    <script src="../../js/request.js"></script>
+    <script src="../../api/device.js"></script>
+    <script src="../../api/hospital.js"></script>
+
+    <script>
+
+      new Vue({
+        el: '#device-app',
+        data() {
+          return {
+            id:[],
+            inputName:'',
+            counts: 0,
+            page: 1,
+            pageSize: 10,
+            tableData : [],
+            checkList: [],
+            opTitle:'',
+            imageUrl:'',
+            statusButtonType:'danger',
+            dialogVisible: false,
+            deviceForm: {
+              id: 0,
+              name:"",
+              image:"",
+              function:"",
+              price:0,
+              company:"",
+            },
+          }
+        },
+
+        created() {
+          this.init()
+        },
+        watch:{
+          deviceTime (val) {
+            if (val && val.length >= 2) {
+              this.beginTime = val[0]
+              this.endTime = val[1]
+            } else {
+              this.beginTime = ''
+              this.endTime = ''
+            }
+          },
+          'deviceForm.status'(){
+            if(this.deviceForm.status === 0){
+              this.deviceForm.endTime = '';
+            }
+          }
+        },
+        methods: {
+          async init () {
+            this.deviceForm = {
+              id: 0,
+              name:"",
+              image:"",
+              function:"",
+              price:0,
+              company:"",
+            }
+            const params = {
+              page: this.page,
+              pageSize: this.pageSize,
+              name: this.inputName ? this.inputName : undefined,
+            }
+            await getDevicePage(params).then(res => {
+              if (String(res.code) === '1') {
+                this.tableData = res.data.records || []
+                console.log("res:",res.data)
+                this.counts = res.data.total
+              }
+            }).catch(err => {
+              this.$message.error(err)
+            })
+          },
+          handleQuery() {
+            this.page = 1;
+            this.init();
+          },
+          getImage (image) {
+            return `/common/download?name=${image}`
+          },
+          handleAvatarSuccess (response, file, fileList) {
+            // 拼接down接口预览
+            if(response.code === 0 && response.msg === '未登录'){
+              window.top.location.href = '../login/login.html'
+            }else{
+              this.imageUrl = `/common/download?name=${response.data}`
+              this.deviceForm.image = response.data
+            }
+          },
+          onChange (file) {
+            if(file){
+              const suffix = file.name.split('.')[1]
+              const size = file.size / 1024 / 1024 < 2
+              if(['png','jpeg','jpg'].indexOf(suffix) < 0){
+                this.$message.error('上传图片只支持 png、jpeg、jpg 格式！')
+                this.$refs.upload.clearFiles()
+                return false
+              }
+              if(!size){
+                this.$message.error('上传文件大小不能超过 2MB!')
+                return false
+              }
+              return file
+            }
+          },
+          // 添加
+          optHandle (st,row) {
+            console.log('st:',st)
+            this.dialogVisible = true
+            if(st === 'add'){
+              this.opTitle = '新增设备'
+            }else{
+              this.opTitle = '编辑设备'
+              getDeviceById({'id':row.id}).then(res => {
+                  if(res.code === 1){
+                    this.deviceForm = res.data
+                  }else{
+                    this.$message.success(res.msg)
+                  }
+              })
+            }
+          },
+          //关闭新增、修改对话框
+          closeHandle(){
+            this.dialogVisible = false
+          },
+          // 删除
+          deleteHandle (type, id) {
+            if (type === '批量' && id === undefined) {
+              if (this.checkList.length === 0) {
+                return this.$message.error('请选择删除对象')
+              }
+            }
+            this.$confirm('确定删除该设备, 是否继续?', '确定删除', {
+              'confirmButtonText': '确定',
+              'cancelButtonText': '取消',
+            }).then(() => {
+              deleteDevice(type === '批量' ? this.checkList.join(',') : id).then(res => {
+                if (res.code === 1) {
+                  this.$message.success('删除成功！')
+                  this.handleQuery()
+                } else {
+                  this.$message.error(res.msg)
+                }
+              }).catch(err => {
+                this.$message.error('请求出错了：' + err)
+              })
+            })
+          },
+          //提交表单
+          submitForm(deviceForm){
+            if(this.opTitle === "新增设备"){
+              addDevice(deviceForm).then(res => {
+                if(res.code === 1){
+                  this.$message.success("设备添加成功！")
+                  this.init()
+                  this.dialogVisible = false;
+                }else{
+                  this.$message.error(res.msg)
+                }
+              }).catch(err => {
+                console.log("opTitle:",this.opTitle)
+                this.$message.error(err)
+              })
+            }else{
+              editDevice(deviceForm).then(res => {
+                if(res.code === 1){
+                  this.$message.success("设备信息修改成功！")
+                  this.init()
+                  this.dialogVisible = false;
+                }else{
+                  this.$message.error(res.msg)
+                }
+              }).catch(err => {
+                this.$message.error(err)
+              })
+            }
+          },
+          // 全部操作
+          handleSelectionChange (val){
+            let checkArr = []
+            val.forEach((n) => {
+              checkArr.push(n.id)
+            })
+            this.checkList = checkArr
+          },
+          handleSizeChange (val) {
+            this.pageSize = val
+            this.init()
+          },
+          handleCurrentChange (val) {
+            this.page = val
+            this.init()
+          }
+        }
+      })
+    </script>
+</body>
+</html>

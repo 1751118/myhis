@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <link rel="stylesheet" href="../../styles/common.css" />
+  <link rel="stylesheet" href="../../styles/page.css" />
+</head>
+<body>
+   <div class="dashboard-container" id="drug-app">
+    <div class="container">
+      <div class="tableBar">
+        <el-input
+          v-model="inputDrug"
+          placeholder="请输入药品名称"
+          style="width: 250px"
+          clearable
+          @keyup.enter.native="handleQuery"
+        >
+          <i
+            slot="prefix"
+            class="el-input__icon el-icon-search"
+            style="cursor: pointer"
+            @click="init"
+          ></i>
+        </el-input>
+        <el-input
+                v-model="inputHospital"
+                placeholder="请输入医院名称"
+                style="width: 250px"
+                clearable
+                @keyup.enter.native="handleQuery"
+        >
+          <i
+                  slot="prefix"
+                  class="el-input__icon el-icon-search"
+                  style="cursor: pointer"
+                  @click="init"
+          ></i>
+        </el-input>
+        <div class="tableLab">
+          <span class="span-btn delBut non" @click="deleteHandle('批量')">批量删除</span>
+          <span class="span-btn blueBug non" @click="statusHandle('1')">批量启售</span>
+          <span
+            style="border:none;"
+            class="span-btn delBut non"
+            @click="statusHandle('0')"
+          >批量停售</span>
+          <el-button
+            type="primary"
+            @click="addDrug('add')"
+          >
+            + 添加药品
+          </el-button>
+        </div>
+      </div>
+      <el-table
+        :data="tableData"
+        stripe
+        class="tableBox"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column
+          type="selection"
+          width="25"
+        ></el-table-column>
+        <el-table-column
+          prop="name"
+          label="药品名称"
+        ></el-table-column>
+
+        <el-table-column
+           prop="hospital"
+           label="所属医院"
+        ></el-table-column>
+
+        <el-table-column
+          prop="price"
+          label="价格"
+        >
+          <template slot-scope="scope">
+            <span>￥{{ scope.row.price }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+           prop="count"
+           label="剩余量"
+        ></el-table-column>
+
+        <el-table-column
+           prop="produceTime"
+           label="生产日期"
+        >
+        </el-table-column>
+
+        <el-table-column
+           prop="expiration"
+           label="保质期"
+        >
+        </el-table-column>
+
+        <el-table-column
+          prop="updateTime"
+          label="最后操作时间"
+        >
+        </el-table-column>
+
+        <el-table-column label="售卖状态">
+          <template slot-scope="scope">
+            <span>{{ scope.row.status == '0' ? '停售' : '启售' }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          label="操作"
+          width="160"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="small"
+              class="blueBug"
+              @click="addDrug('edit',scope.row)"
+            >
+              编辑
+            </el-button>
+            <el-button
+              type="text"
+              size="small"
+              class="blueBug"
+              @click="statusHandle(scope.row)"
+            >
+              {{ scope.row.status == '0' ? '启售' : '停售' }}
+            </el-button>
+            <el-button
+              type="text"
+              size="small"
+              class="delBut non"
+              @click="deleteHandle('单删', scope.row.id)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        class="pageList"
+        :page-sizes="[10, 20, 30, 40]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="counts"
+        @size-change="handleSizeChange"
+        :current-page.sync="page"
+        @current-change="handleCurrentChange"
+      ></el-pagination>
+
+      <!--    编辑、新增药品信息页面-->
+      <el-dialog
+         :title="opTitle"
+         :visible.sync="dialogVisible"
+         :before-close="closeHandle"
+         width="30%"
+         :modal="false"
+      >
+        <el-form
+                :inline="false"
+                label-width="180px"
+                class="demo-ruleForm"
+        >
+          <el-form-item prop="name" label="药品名称">
+            <el-input v-model="drugForm.name" placeholder="请输入药品名称" maxlength="30"/>
+          </el-form-item>
+
+          <el-form-item prop="price" label="药品价格">
+            <el-input v-model="drugForm.price" placeholder="请输入药品价格" maxlength="10"/>
+          </el-form-item>
+
+          <el-form-item prop="count" label="药品数量">
+            <el-input v-model="drugForm.count" placeholder="请输入药品数量" maxlength="10"/>
+          </el-form-item>
+
+          <el-form-item prop="produceTime" label="生产日期">
+            <el-date-picker
+                    v-model="drugForm.produceTime"
+                    type="date"
+                    placeholder="选择日期"
+                    :picker-options="pickerOptions">
+            </el-date-picker>
+          </el-form-item>
+
+          <el-form-item prop="expiration" label="保质期">
+            <el-input v-model="drugForm.expiration" placeholder="请输入保质期" maxlength="10"/>
+          </el-form-item>
+
+          <el-form-item  prop="hospital" label="所属医院">
+            <el-select  v-model="drugForm.hid" placeholder="请选择" value-key="id">
+              <el-option
+                      v-for="h in hospitals"
+                      :key="h.id"
+                      :label="h.label"
+                      :value="`${h.id}|${h.name}`">
+              </el-option>
+            </el-select>
+          </el-form-item>
+
+          <div class="subBox address">
+            <el-form-item>
+              <el-button  @click="closeHandle">
+                取消
+              </el-button>
+              <el-button
+                      type="primary"
+                      @click="submitForm(drugForm)"
+              >
+                保存
+              </el-button>
+            </el-form-item>
+          </div>
+        </el-form>
+      </el-dialog>
+
+    </div>
+  </div>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="../../plugins/vue/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="../../plugins/element-ui/index.js"></script>
+    <!-- 引入axios -->
+    <script src="../../plugins/axios/axios.min.js"></script>
+    <script src="../../js/request.js"></script>
+    <script src="../../api/drug.js"></script>
+    <script src="../../api/hospital.js"></script>
+    <script>
+      new Vue({
+        el: '#drug-app',
+        data() {
+          return {
+            inputDrug: '',
+            inputHospital: '',
+            counts: 0,
+            page: 1,
+            pageSize: 10,
+            tableData : [],
+            dishState : '',
+            hospitals:[],
+            checkList: [],
+            opTitle:'',
+            statusButtonType:'danger',
+            dialogVisible: false,
+            drugForm: {
+              id: 0,
+              name: '大力丸',
+              price: "9.15",
+              produceTime: "2022-05-04",
+              expiration: '24个月',
+              status: true,
+              hid: '',
+              count: 10,
+            },
+            pickerOptions: {
+              disabledDate(time) {
+                return time.getTime() > Date.now();
+              },
+              shortcuts: [{
+                text: '今天',
+                onClick(picker) {
+                  picker.$emit('pick', new Date());
+                }
+              }, {
+                text: '昨天',
+                onClick(picker) {
+                  const date = new Date();
+                  date.setTime(date.getTime() - 3600 * 1000 * 24);
+                  picker.$emit('pick', date);
+                }
+              }, {
+                text: '一周前',
+                onClick(picker) {
+                  const date = new Date();
+                  date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+                  picker.$emit('pick', date);
+                }
+              }]
+            },
+          }
+        },
+        computed: {},
+        created() {
+          this.init()
+        },
+        mounted() {
+        },
+        methods: {
+          async init () {
+            this.drugForm = {
+              id:0,
+              name: '大力丸',
+              price: "9.15",
+              produceTime: "2022-05-04",
+              expiration: '24个月',
+              status: true,
+              hid: '',
+              count: 10,
+            }
+            const params = {
+              page: this.page,
+              pageSize: this.pageSize,
+              drugName: this.inputDrug ? this.inputDrug : undefined,
+              hospitalName: this.inputHospital ? this.inputHospital : undefined
+            }
+            await getDrugPage(params).then(res => {
+              if (String(res.code) === '1') {
+                this.tableData = res.data.records || []
+                this.counts = res.data.total
+              }
+            }).catch(err => {
+              this.$message.error('请求出错了：' + err)
+            })
+          },
+          handleQuery() {
+            this.page = 1;
+            this.init();
+          },
+          // 添加
+          addDrug (st,row) {
+            this.dialogVisible = true
+            getHospital().then(res => {
+              if(res.code === 1){
+                this.hospitals = res.data
+              }else{
+                this.$message.success(res.msg)
+              }
+            }).catch(err => {
+              this.$message.error(err)
+            })
+
+            if(st === 'add'){
+              this.opTitle = '新增药品'
+
+            }else{
+              this.opTitle = '编辑药品'
+              getDrugById({'id':row.id}).then(res => {
+                  if(res.code === 1){
+                    this.drugForm = res.data
+                    this.drugForm.hid = res.data.hid + "|" + res.data.hospital
+                  }else{
+                    this.$message.success(res.msg)
+                  }
+              })
+              getHospitalById({'id':row.hid}).then(res => {
+                if(res.code === 1){
+                  let hospitalName = res.data.id + '|' + res.data.name
+                  this.drugForm.hid = hospitalName
+                }else{
+                  this.$message.success(res.msg)
+                }
+              }).catch(err => {
+                this.$message.error(err)
+              })
+            }
+          },
+          //关闭新增、修改对话框
+          closeHandle(){
+            this.dialogVisible = false
+          },
+          // 删除
+          deleteHandle (type, id) {
+            if (type === '批量' && id === null) {
+              if (this.checkList.length === 0) {
+                return this.$message.error('请选择删除对象')
+              }
+            }
+            this.$confirm('确定删除该药品, 是否继续?', '确定删除', {
+              'confirmButtonText': '确定',
+              'cancelButtonText': '取消',
+            }).then(() => {
+              deleteDrug(type === '批量' ? this.checkList.join(',') : id).then(res => {
+                if (res.code === 1) {
+                  this.$message.success('删除成功！')
+                  this.handleQuery()
+                } else {
+                  this.$message.error(res.msg || '操作失败')
+                }
+              }).catch(err => {
+                this.$message.error('请求出错了：' + err)
+              })
+            })
+          },
+          //提交表单
+          submitForm(drugForm){
+            let [hid, name] = drugForm.hid.split('|')
+            drugForm.hid = hid
+            if(this.opTitle === "新增药品"){
+              addDrug(drugForm).then(res => {
+                if(res.code === 1){
+                  this.$message.success("药品添加成功！")
+                  this.init()
+                  this.dialogVisible = false;
+                }else{
+                  this.$message.error(res.msg)
+                }
+              }).catch(err => {
+                this.$message.error(err)
+              })
+            }else{
+              editDrug(drugForm).then(res => {
+                if(res.code === 1){
+                  this.$message.success("药品信息修改成功！")
+                  this.init()
+                  this.dialogVisible = false;
+                }else{
+                  this.$message.error(res.msg)
+                }
+              }).catch(err => {
+                this.$message.error(err)
+              })
+            }
+          },
+          //状态更改
+          statusHandle (row) {
+            let params = {}
+            if (typeof row === 'string' ){
+              if (this.checkList.length == 0){
+                this.$message.error('批量操作，请先勾选操作菜品！')
+                return false
+              }
+              params.ids = this.checkList.join(',')
+              params.status = row
+            } else {
+              params.ids = row.id
+              params.status = row.status ? '0' : '1'
+            }
+            this.$confirm('确认更改该药品状态?', '提示', {
+              'confirmButtonText': '确定',
+              'cancelButtonText': '取消',
+              'type': 'warning'
+            }).then(() => {
+              // 起售停售---批量起售停售接口
+              drugStatusByStatus(params).then(res => {
+                if (res.code === 1) {
+                  this.$message.success('药品状态已经更改成功！')
+                  this.handleQuery()
+                } else {
+                  this.$message.error(res.msg || '操作失败')
+                }
+              }).catch(err => {
+                  this.$message.error('请求出错了：' + err)
+              })
+            })
+          },
+
+          // 全部操作
+          handleSelectionChange (val){
+            let checkArr = []
+            val.forEach((n) => {
+              checkArr.push(n.id)
+            })
+            this.checkList = checkArr
+          },
+          handleSizeChange (val) {
+            this.pageSize = val
+            this.init()
+          },
+          handleCurrentChange (val) {
+            this.page = val
+            this.init()
+          }
+        }
+      })
+    </script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="96e75f0d-0f99-4dac-9bb8-05bb9714d3ec" name="Default Changelist" comment="更新了maven jar包" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Merge.Settings">
+    <option name="BRANCH" value="v1.0" />
+  </component>
+  <component name="Git.Settings">
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--follow-tags" />
+        <option name="title" value="Current Branch" />
+      </GitPushTagMode>
+    </option>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="v1.0" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="$PROJECT_DIR$/../tomcatMaven/apache-maven-3.6.3" />
+        <option name="userSettingsFile" value="D:\tomcatMaven\apache-maven-3.6.3\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2MScR5paJBs4q0DrO9yML4LBlE6" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/resources/backend/styles" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\totalStudy\sixth\MysqlPractice\myhis\src\main\resources\backend\styles" />
+      <recent name="D:\totalStudy\sixth\MysqlPractice\myhis\src\main\resources\backend\images\login" />
+      <recent name="D:\totalStudy\sixth\MysqlPractice\myhis\src\main\resources\backend\api" />
+      <recent name="D:\totalStudy\sixth\MysqlPractice\myhis\src\main\resources\backend\page" />
+      <recent name="D:\totalStudy\sixth\MysqlPractice\myhis\src\main\resources\backend\page\appointment" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\totalStudy\sixth\MysqlPractice\myhis\src\main\resources\backend" />
+      <recent name="D:\totalStudy\sixth\MysqlPractice\myhis\src\main\resources\backend\page" />
+      <recent name="D:\reggie_take_out\src\main\resources\front" />
+      <recent name="D:\reggie_take_out\src\main\resources\backend\page\demo" />
+      <recent name="D:\reggie_take_out\src\main\resources\backend\page\login" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="me.youmeng.service.impl" />
+      <recent name="me.youmeng.service" />
+      <recent name="me.youmeng.mapper" />
+      <recent name="me.youmeng.domain" />
+      <recent name="me.youmeng.controller" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.MyHISApplication">
+    <configuration name="MyHISApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="myhis" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="me.youmeng.MyHISApplication" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SHORTEN_COMMAND_LINE" value="NONE" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ReggieApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="reggie_take_out" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="me.youmeng.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="me.youmeng.ReggieApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Spring Boot.MyHISApplication" />
+      <item itemvalue="Spring Boot.ReggieApplication" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.ReggieApplication" />
+        <item itemvalue="Spring Boot.ReggieApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="96e75f0d-0f99-4dac-9bb8-05bb9714d3ec" name="Default Changelist" comment="" />
+      <created>1677764417544</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1677764417544</updated>
+      <workItem from="1677764418871" duration="5661000" />
+      <workItem from="1677803421286" duration="30279000" />
+      <workItem from="1677897304951" duration="30692000" />
+      <workItem from="1677983735078" duration="26930000" />
+      <workItem from="1678062041409" duration="862000" />
+      <workItem from="1678084408504" duration="2442000" />
+      <workItem from="1678148811086" duration="6738000" />
+      <workItem from="1678178371509" duration="5121000" />
+      <workItem from="1678237170608" duration="3082000" />
+      <workItem from="1678248113659" duration="2514000" />
+      <workItem from="1678274476612" duration="3487000" />
+      <workItem from="1678328788646" duration="20000" />
+      <workItem from="1678516440730" duration="6152000" />
+      <workItem from="1682911422873" duration="2241000" />
+      <workItem from="1682913759639" duration="21072000" />
+      <workItem from="1683006386547" duration="15020000" />
+      <workItem from="1683073428619" duration="11588000" />
+      <workItem from="1683086963040" duration="12543000" />
+      <workItem from="1683180287439" duration="24092000" />
+      <workItem from="1683352067067" duration="12447000" />
+      <workItem from="1683441627232" duration="10241000" />
+      <workItem from="1683509008662" duration="9554000" />
+      <workItem from="1683603167829" duration="37000" />
+      <workItem from="1683622968160" duration="1782000" />
+      <workItem from="1685927687112" duration="176000" />
+      <workItem from="1685927900615" duration="75000" />
+      <workItem from="1685928302029" duration="63000" />
+      <workItem from="1685928404022" duration="18000" />
+      <workItem from="1685928523985" duration="42000" />
+      <workItem from="1685928639469" duration="466000" />
+      <workItem from="1685929296708" duration="51000" />
+      <workItem from="1685929682697" duration="9956000" />
+      <workItem from="1685948749659" duration="7543000" />
+      <workItem from="1685966875745" duration="7793000" />
+      <workItem from="1686010062020" duration="18772000" />
+      <workItem from="1686099001314" duration="23256000" />
+      <workItem from="1686188530158" duration="609000" />
+    </task>
+    <task id="LOCAL-00001" summary="一个测试IDEA中使用git的类">
+      <created>1678085312788</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1678085312788</updated>
+    </task>
+    <task id="LOCAL-00002" summary="新增了redis缓存机制">
+      <created>1678173949615</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1678173949615</updated>
+    </task>
+    <task id="LOCAL-00003" summary="新增了redis缓存机制，关于验证码、菜品的缓存">
+      <created>1678180527341</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1678180527341</updated>
+    </task>
+    <task id="LOCAL-00004" summary="新增了redis缓存机制，关于验证码、菜品的缓存，按照.gitignore忽略的文件上传">
+      <created>1678181080651</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1678181080651</updated>
+    </task>
+    <task id="LOCAL-00005" summary="新增了redis缓存机制，关于验证码、菜品的缓存，按照.gitignore忽略的文件上传">
+      <created>1678181766312</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1678181766312</updated>
+    </task>
+    <task id="LOCAL-00006" summary="更改了yml配置文件中的图片映射途径，将项目部署在linux服务器上">
+      <created>1678243427563</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1678243427563</updated>
+    </task>
+    <task id="LOCAL-00007" summary="更新了maven jar包">
+      <created>1678246138669</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1678246138669</updated>
+    </task>
+    <task id="LOCAL-00008" summary="更新了maven jar包">
+      <created>1678246501355</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1678246501355</updated>
+    </task>
+    <task id="LOCAL-00009" summary="更新了maven jar包">
+      <created>1678246544436</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1678246544436</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="一个测试IDEA中使用git的类" />
+    <MESSAGE value="新增了redis缓存机制" />
+    <MESSAGE value="新增了redis缓存机制，关于验证码、菜品的缓存" />
+    <MESSAGE value="新增了redis缓存机制，关于验证码、菜品的缓存，按照.gitignore忽略的文件上传" />
+    <MESSAGE value="更改了yml配置文件中的图片映射途径，将项目部署在linux服务器上" />
+    <MESSAGE value="更新了maven jar包" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新了maven jar包" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.net.ConnectException" package="java.net" />
+          <option name="timeStamp" value="17" />
+        </breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/main/resources/backend/page/doctor/list.html</url>
+          <line>256</line>
+          <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/DoctorController.java</url>
+          <line>173</line>
+          <option name="timeStamp" value="33" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/DrugController.java</url>
+          <line>163</line>
+          <option name="timeStamp" value="38" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/CasesController.java</url>
+          <line>95</line>
+          <option name="timeStamp" value="39" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/CasesController.java</url>
+          <line>190</line>
+          <option name="timeStamp" value="40" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/CasesController.java</url>
+          <line>212</line>
+          <option name="timeStamp" value="42" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/CasesController.java</url>
+          <line>170</line>
+          <option name="timeStamp" value="43" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/AppointmentController.java</url>
+          <line>138</line>
+          <option name="timeStamp" value="50" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/DoctorController.java</url>
+          <line>137</line>
+          <option name="timeStamp" value="54" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/HospitalController.java</url>
+          <line>78</line>
+          <option name="timeStamp" value="55" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/AppointmentController.java</url>
+          <line>117</line>
+          <option name="timeStamp" value="58" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/AppointmentController.java</url>
+          <line>163</line>
+          <option name="timeStamp" value="59" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/DeviceController.java</url>
+          <line>102</line>
+          <option name="timeStamp" value="73" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/DeviceController.java</url>
+          <line>84</line>
+          <option name="timeStamp" value="74" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/OperationController.java</url>
+          <line>56</line>
+          <option name="timeStamp" value="79" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/PrescriptionController.java</url>
+          <line>172</line>
+          <option name="timeStamp" value="82" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/PrescriptionController.java</url>
+          <line>74</line>
+          <option name="timeStamp" value="84" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/PrescriptionController.java</url>
+          <line>63</line>
+          <option name="timeStamp" value="85" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/UserController.java</url>
+          <line>109</line>
+          <option name="timeStamp" value="90" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/PatientController.java</url>
+          <line>151</line>
+          <option name="timeStamp" value="91" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/HospitalController.java</url>
+          <line>135</line>
+          <option name="timeStamp" value="94" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/me/youmeng/controller/HospitalController.java</url>
+          <line>145</line>
+          <option name="timeStamp" value="95" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="com.baomidou.mybatisplus.extension.plugins.pagination.Page" memberName="records" />
+        <PinnedItemInfo parentTag="com.baomidou.mybatisplus.extension.plugins.pagination.Page" memberName="total" />
+      </pinned-members>
+    </pin-to-top-manager>
+    <watches-manager>
+      <configuration name="SpringBootApplicationConfigurationType">
+        <watch expression="request.getSession()" language="JAVA" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/myhis$ReggieApplication__1_.ic" NAME="ReggieApplication (1) Coverage Results" MODIFIED="1683206236641" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+  </component>
+</project>

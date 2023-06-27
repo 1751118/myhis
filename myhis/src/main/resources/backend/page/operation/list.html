@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <link rel="stylesheet" href="../../styles/common.css" />
+  <link rel="stylesheet" href="../../styles/page.css" />
+</head>
+<body>
+   <div class="dashboard-container" id="operation-app">
+    <div class="container">
+      <div class="tableBar">
+        <el-input
+          v-model="inputOperation"
+          placeholder="请输入手术id"
+          style="width: 250px"
+          clearable
+          @keyup.enter.native="handleQuery"
+        >
+          <i
+            slot="prefix"
+            class="el-input__icon el-icon-search"
+            style="cursor: pointer"
+            @click="init"
+          ></i>
+        </el-input>
+          <el-input
+            v-model="inputName"
+            placeholder="请输入手术名称"
+            style="width: 250px"
+            clearable
+            @keyup.enter.native="handleQuery"
+          >
+            <i
+            slot="prefix"
+            class="el-input__icon el-icon-search"
+            style="cursor: pointer"
+            @click="init"
+            ></i>
+          </el-input>
+
+          <div class="tableLab">
+          <span class="span-btn delBut non" @click="deleteHandle('批量')">批量删除</span>
+          <el-button
+             type="primary"
+             @click="addopt('add')"
+          >
+            + 添加手术
+          </el-button>
+        </div>
+      </div>
+      <el-table
+        :data="tableData"
+        stripe
+        class="tableBox"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column
+          type="selection"
+          width="25"
+        ></el-table-column>
+        <el-table-column
+          prop="id"
+          label="手术id"
+        ></el-table-column>
+        <el-table-column
+          prop="name"
+          label="手术名称"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="devices"
+          label="仪器设备"
+        >
+          <template slot-scope="scope">
+            {{ scope.row.devices.join('，') }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="createTime"
+          label="手术时间"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="result"
+          label="手术结果"
+          >
+          <template slot-scope="scope">
+            <span>{{ scope.row.result == 1?"成功":"失败" }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          label="操作"
+          width="160"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <el-button
+              type="success"
+              icon="el-icon-edit"
+              circle
+              @click="addopt('edit',scope.row.id)"
+            >
+            </el-button>
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              circle
+              @click="deleteHandle('单删', scope.row.id)"
+            >
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        class="pageList"
+        :page-sizes="[10, 20, 30, 40]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="counts"
+        @size-change="handleSizeChange"
+        :current-page.sync="page"
+        @current-change="handleCurrentChange"
+      ></el-pagination>
+
+      <!--    编辑、新增手术信息页面-->
+      <el-dialog
+         :title="opTitle"
+         :visible.sync="dialogVisible"
+         :before-close="closeHandle"
+         width="30%"
+         :modal="false"
+      >
+        <el-form
+                :inline="false"
+                label-width="180px"
+                class="demo-ruleForm"
+        >
+          <el-form-item prop="name" label="手术名称">
+            <el-input v-model="operationForm.name" placeholder="请输入手术名称" maxlength="30"/>
+          </el-form-item>
+          <el-form-item prop="createTime" label="手术时间">
+            <el-date-picker
+                    v-model="operationForm.createTime"
+                    align="right"
+                    type="datetime"
+                    placeholder="选择日期"
+                    :picker-options="pickerOptions"
+                    value-format="yyyy-MM-dd HH:mm:ss">
+            </el-date-picker>
+          </el-form-item>
+
+<!--          <el-form-item prop="devices" label="仪器设备">-->
+<!--            <el-input v-model="devicesStr" placeholder="请输入所包含仪器设备" maxlength="100"/>-->
+<!--          </el-form-item>-->
+
+          <el-form-item prop="result" label="手术结果">
+            <el-radio-group v-model="operationForm.result">
+              <el-radio :label="1" :checked="operationForm.result == true">成功</el-radio>
+              <el-radio :label="0" :checked="operationForm.result == false">失败</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item
+            label="设备描述:"
+            prop="devices"
+          >
+            <el-input
+                    v-model="devicesStr"
+                    type="textarea"
+                    :rows="3"
+                    placeholder="请输入手术用到的主要设备，或为空，或设备间使用中文逗号分割"
+                    maxlength="200"
+            />
+          </el-form-item>
+
+          <div class="subBox address">
+            <el-form-item>
+              <el-button  @click="closeHandle">
+                取消
+              </el-button>
+              <el-button
+                type="primary"
+                @click="submitForm(operationForm)"
+              >
+                保存
+              </el-button>
+            </el-form-item>
+          </div>
+        </el-form>
+      </el-dialog>
+
+    </div>
+  </div>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="../../plugins/vue/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="../../plugins/element-ui/index.js"></script>
+    <!-- 引入axios -->
+    <script src="../../plugins/axios/axios.min.js"></script>
+    <script src="../../js/request.js"></script>
+    <script src="../../api/operation.js"></script>
+    <script src="../../api/hospital.js"></script>
+    <script>
+      new Vue({
+        el: '#operation-app',
+        data() {
+          return {
+            inputOperation: '',
+            inputName:'',
+            inputHospital: '',
+            counts: 0,
+            page: 1,
+            pageSize: 10,
+            tableData : [],
+            dishState : '',
+            hospitals:[],
+            checkList: [],
+            opTitle:'',
+            statusButtonType:'danger',
+            dialogVisible: false,
+            devicesStr:'',
+            operationForm: {
+              name: "",
+              createTime: "2023-04-04 00:00:00",
+              devices:[],
+              result: true,
+            },
+            pickerOptions: {
+              disabledDate(time) {
+                return time.getTime() > Date.now();
+              },
+              shortcuts: [{
+                text: '今天',
+                onClick(picker) {
+                  picker.$emit('pick', new Date());
+                }
+              }, {
+                text: '昨天',
+                onClick(picker) {
+                  const date = new Date();
+                  date.setTime(date.getTime() - 3600 * 1000 * 24);
+                  picker.$emit('pick', date);
+                }
+              }, {
+                text: '一周前',
+                onClick(picker) {
+                  const date = new Date();
+                  date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+                  picker.$emit('pick', date);
+                }
+              }]
+            },
+          }
+        },
+        computed: {},
+        created() {
+          this.init()
+        },
+        mounted() {
+        },
+        methods: {
+          async init () {
+            const params = {
+              page: this.page,
+              pageSize: this.pageSize,
+              operationId: this.inputOperation ? this.inputOperation : undefined,
+              operationName: this.inputName ? this.inputName : undefined,
+            }
+            await getOperationPage(params).then(res => {
+              if (String(res.code) === '1') {
+                this.tableData = res.data.records || []
+                this.counts = res.data.total
+              }
+            }).catch(err => {
+              this.$message.error('请求出错了：' + err)
+            })
+          },
+          handleQuery() {
+            this.page = 1;
+            this.init();
+          },
+          // 添加
+          addopt (st,id) {
+            this.dialogVisible = true
+            if(st === 'add'){
+              this.opTitle = '新增手术'
+              this.operationForm = {
+                name: "",
+                createTime: "2023-04-04 00:00:00",
+                devices:[],
+                result: true,
+              }
+              this.devicesStr = ''
+            }else{
+              this.opTitle = '编辑手术'
+              getOperationById({'id': id}).then(res => {
+                  if(res.code === 1){
+                    this.operationForm = res.data
+                    this.devicesStr = this.operationForm.devices.join("，")
+                    console.log("devicesStr", this.devicesStr)
+                  }else{
+                    this.$message.success(res.msg)
+                  }
+              }).catch(err => {
+                this.$message.error(err)
+              })
+            }
+          },
+          //关闭新增、修改对话框
+          closeHandle(){
+            this.dialogVisible = false
+          },
+          // 删除
+          deleteHandle (type, id) {
+            if (type === '批量' && id === null) {
+              if (this.checkList.length === 0) {
+                return this.$message.error('请选择删除对象')
+              }
+            }
+            this.$confirm('确定删除该手术, 是否继续?', '确定删除', {
+              'confirmButtonText': '确定',
+              'cancelButtonText': '取消',
+            }).then(() => {
+              deleteOperation(type === '批量' ? this.checkList.join(',') : id).then(res => {
+                if (res.code === 1) {
+                  this.$message.success('删除成功！')
+                  this.handleQuery()
+                } else {
+                  this.$message.error(res.msg || '操作失败')
+                }
+              }).catch(err => {
+                this.$message.error('请求出错了：' + err)
+              })
+            })
+          },
+          //提交表单
+          submitForm(operationForm){
+            this.operationForm.devices = this.devicesStr.split("，")
+            if(this.opTitle === "新增手术"){
+              addOperation(operationForm).then(res => {
+                if(res.code === 1){
+                  this.$message.success("手术添加成功！")
+                  this.init()
+                  this.dialogVisible = false;
+                }else{
+                  this.$message.error(res.msg)
+                }
+              }).catch(err => {
+                this.$message.error(err)
+              })
+            }else{
+              editOperation(operationForm).then(res => {
+                if(res.code === 1){
+                  this.$message.success("手术信息修改成功！")
+                  this.init()
+                  this.dialogVisible = false;
+                }else{
+                  this.$message.error(res.msg)
+                }
+              }).catch(err => {
+                this.$message.error(err)
+              })
+            }
+          },
+          //状态更改
+          statusHandle (row) {
+            let params = {}
+            if (typeof row === 'string' ){
+              if (this.checkList.length == 0){
+                this.$message.error('批量操作，请先勾选操作菜品！')
+                return false
+              }
+              params.ids = this.checkList.join(',')
+              params.status = row
+            } else {
+              params.ids = row.id
+              params.status = row.status ? '0' : '1'
+            }
+            this.$confirm('确认更改该手术状态?', '提示', {
+              'confirmButtonText': '确定',
+              'cancelButtonText': '取消',
+              'type': 'warning'
+            }).then(() => {
+              // 起售停售---批量起售停售接口
+              operationStatusByStatus(params).then(res => {
+                if (res.code === 1) {
+                  this.$message.success('手术状态已经更改成功！')
+                  this.handleQuery()
+                } else {
+                  this.$message.error(res.msg || '操作失败')
+                }
+              }).catch(err => {
+                  this.$message.error('请求出错了：' + err)
+              })
+            })
+          },
+
+          // 全部操作
+          handleSelectionChange (val){
+            let checkArr = []
+            val.forEach((n) => {
+              checkArr.push(n.id)
+            })
+            this.checkList = checkArr
+          },
+          handleSizeChange (val) {
+            this.pageSize = val
+            this.init()
+          },
+          handleCurrentChange (val) {
+            this.page = val
+            this.init()
+          }
+        }
+      })
+    </script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <link rel="stylesheet" href="../../styles/common.css" />
+  <link rel="stylesheet" href="../../styles/page.css" />
+</head>
+<body>
+<div class="dashboard-container" id="hospital-app">
+  <div class="container">
+    <div class="tableBar">
+      <el-input
+              v-model="input"
+              placeholder="请输入医院名称"
+              style="width: 250px"
+              clearable
+              @keyup.enter.native="handleQuery"
+      >
+        <i
+                slot="prefix"
+                class="el-input__icon el-icon-search"
+                style="cursor: pointer"
+                @click="handleQuery"
+        ></i>
+      </el-input>
+      <el-button
+              type="primary"
+              @click="addHospitalHandle()"
+      >
+        + 添加医院
+      </el-button>
+    </div>
+    <el-table
+            :data="tableData"
+            stripe
+            class="tableBox"
+    >
+      <el-table-column
+              prop="name"
+              label="医院名称"
+      ></el-table-column>
+      <el-table-column
+              prop="address"
+              label="地址"
+      ></el-table-column>
+      <el-table-column
+              prop="telephone"
+              label="电话"
+      ></el-table-column>
+
+      <el-table-column
+              prop="level"
+              label="等级"
+      ></el-table-column>
+
+      <el-table-column
+              label="操作"
+              width="160"
+              align="center"
+      >
+        <template slot-scope="scope">
+          <el-button
+                  type="success"
+                  icon="el-icon-edit"
+                  circle
+                  @click="editHospitalHandle(scope.row)"
+          >
+          </el-button>
+
+          <el-button
+                  type="danger"
+                  icon="el-icon-delete"
+                  circle
+                  @click="deleteHandle(scope.row)"
+          >
+          </el-button>
+        </template>
+      </el-table-column>
+
+    </el-table>
+    <el-pagination
+            class="pageList"
+            :page-sizes="[3,5,10,20]"
+            :page-size="pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="counts"
+            :current-page.sync="page"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+    ></el-pagination>
+  </div>
+
+  <!--    编辑信息页面-->
+  <el-dialog
+          title="编辑医院信息"
+          :visible.sync="dialogVisible"
+          width="30%"
+          :before-close="closeHandle"
+  >
+    <el-form
+            :inline="false"
+            label-width="180px"
+            class="demo-ruleForm"
+    >
+      <el-form-item prop="name" label="医院名称">
+        <el-input v-model="hospitalForm.name" placeholder="请输入名称" maxlength="30"/>
+      </el-form-item>
+
+      <el-form-item prop="address" label="医院地址">
+        <el-input v-model="hospitalForm.address" placeholder="请输入地址" maxlength="50"/>
+      </el-form-item>
+
+      <el-form-item prop="telephone" label="医院电话">
+        <el-input v-model="hospitalForm.telephone" placeholder="请输入电话" maxlength="11"/>
+      </el-form-item>
+
+      <el-form-item prop="level" label="医院等级">
+        <el-input v-model="hospitalForm.level" placeholder="请输入等级" maxlength="10"/>
+      </el-form-item>
+
+
+      <div class="subBox address">
+        <el-form-item>
+          <el-button  @click="closeHandle">
+            取消
+          </el-button>
+          <el-button
+                  type="primary"
+                  @click="submitForm(hospitalForm)"
+          >
+            保存
+          </el-button>
+        </el-form-item>
+      </div>
+    </el-form>
+  </el-dialog>
+</div>
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../plugins/element-ui/index.js"></script>
+<!-- 引入axios -->
+<script src="../../plugins/axios/axios.min.js"></script>
+<script src="../../js/request.js"></script>
+<script src="../../api/hospital.js"></script>
+<script src="../../js/validate.js"></script>
+<script src="../../api/hospital.js"></script>
+<script src="../../api/user.js"></script>
+<script>
+  window.onpageshow = function(event) {
+    if (event.persisted || window.performance &&
+            window.performance.navigation.type == 2) {
+      window.location.reload();
+    }
+  }
+  new Vue({
+    el: '#hospital-app',
+    data() {
+      return {
+        input: '',
+        counts: 0,
+        page: 1,
+        pageSize: 5,
+        tableData : [],
+        id : '',
+        status : '',
+        dialogVisible: false,
+        hospitalForm :{
+          'id':'',
+          'name': '同济大学',
+          'address':'',
+          'telephone':'65989120',
+          'level':'三级甲等',
+        },
+      }
+    },
+    computed: {
+      rules() {
+        return {
+          //账号
+          username: [
+            {
+              required: true, 'validator': checkUserName, trigger: 'blur'
+            }
+          ],
+          //姓名
+          name: [{required: true, 'validator': checkName, 'trigger': 'blur'}],
+          'telephone': [{'required': true, 'validator': checkPhone, 'trigger': 'blur'}],
+        }
+      }
+    },
+    created() {
+      this.init()
+      this.user = JSON.parse(localStorage.getItem('userInfo')).username
+    },
+    mounted() {
+    },
+
+    methods: {
+      async init () {
+        const params = {
+          page: this.page,
+          pageSize: this.pageSize,
+          name: this.input ? this.input : undefined
+        }
+        await getHospitalList(params).then(res => {
+          if (String(res.code) === '1') {
+            this.tableData = res.data.records || []
+            this.counts = res.data.total
+            console.log("res,",res)
+            console.log("counts,",this.counts)
+          }
+        }).catch(err => {
+          this.$message.error('请求出错了：' + err)
+        })
+      },
+      handleQuery() {
+        this.page = 1;
+        this.init();
+      },
+      // 添加
+      addHospitalHandle () {
+        window.parent.menuHandle({
+          id: '3',
+          url: '/backend/page/hospital/add.html',
+          name: '添加医院'
+        },true)
+      },
+      editHospitalHandle(row){
+        this.dialogVisible = true
+        getHospitalById({'id':row.id}).then(res => {
+          if(res.code === 1){
+            this.hospitalForm = res.data
+          }
+        }).catch(err => {
+          this.$message.error(err)
+        })
+      },
+      //关闭编辑框
+      closeHandle(){
+        this.dialogVisible = false;
+      },
+      //删除一位医院信息
+      deleteHandle(row){
+        this.$confirm('此操作将永久删除该信息，是否确认？','提示',{
+          'confirmButtonText': '确定',
+          'cancelButtonText': '取消',
+          'type': 'warning'
+        }).then(()=>{
+          deleteHospital({'id':row.id}).then(res => {
+            if(res.code === 1){
+              this.$message.success("医院信息删除成功！")
+              this.init()
+            }else{
+              this.$message.error(res.msg)
+            }
+          })
+        }).catch(err => {
+          this.$message.error("请求出错了!" + err)
+        })
+
+
+      },
+      submitForm(hospitalForm){
+        editHospitalFinish(hospitalForm).then(res => {
+          if(res.code === 1){
+            this.$message.success("医院信息修改成功！")
+            this.init()
+            this.closeHandle()
+          }else{
+            this.$message.error(res.msg)
+          }
+        })
+      },
+      handleSizeChange (val) {
+        this.pageSize = val
+        this.init()
+      },
+      handleCurrentChange (val) {
+        this.page = val
+        this.init()
+      }
+    }
+  })
+</script>
+</body>
+</html>

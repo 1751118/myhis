@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <link rel="stylesheet" href="../../styles/common.css" />
+  <link rel="stylesheet" href="../../styles/page.css" />
+  <style>
+    #doctor-app  .notAdmin::after{
+      border: 0 !important;
+
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container" id="doctor-app">
+    <div class="container">
+      <div class="tableBar">
+        <el-input
+          v-model="input"
+          placeholder="请输入医生姓名"
+          style="width: 250px"
+          clearable
+           @keyup.enter.native="handleQuery"
+        >
+          <i
+            slot="prefix"
+            class="el-input__icon el-icon-search"
+            style="cursor: pointer"
+            @click="handleQuery"
+          ></i>
+        </el-input>
+        <el-button
+          type="primary"
+          @click="addDoctorHandle()"
+        >
+          + 添加医生
+        </el-button>
+      </div>
+      <el-table
+        :data="tableData"
+        stripe
+        class="tableBox"
+      >
+        <el-table-column
+          prop="name"
+          label="医生姓名"
+        ></el-table-column>
+        <el-table-column
+          prop="gender"
+          label="性别"
+        ></el-table-column>
+        <el-table-column
+           prop="age"
+           label="年龄"
+        ></el-table-column>
+        <el-table-column
+          prop="username"
+          label="账号"
+        ></el-table-column>
+        <el-table-column
+          prop="telephone"
+          label="手机号"
+        ></el-table-column>
+        <el-table-column
+                prop="hospital"
+                label="所属医院"
+        ></el-table-column>
+        <el-table-column
+                prop="department"
+                label="科室"
+        ></el-table-column>
+        <el-table-column
+                prop="level"
+                label="职称"
+        ></el-table-column>
+        <el-table-column
+                prop="createTime"
+                label="注册时间"
+        ></el-table-column>
+        <el-table-column
+          label="操作"
+          width="160"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <el-button
+             type="success"
+             icon="el-icon-edit"
+             circle
+             @click="editDoctorHandle(scope.row)"
+            >
+            </el-button>
+
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              circle
+              @click="deleteHandle(scope.row)"
+            >
+            </el-button>
+          </template>
+        </el-table-column>
+
+      </el-table>
+      <el-pagination
+        class="pageList"
+        :page-sizes="[3,5,10,20]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="counts"
+        :current-page.sync="page"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      ></el-pagination>
+    </div>
+
+<!--    编辑信息页面-->
+    <el-dialog
+     title="编辑医生信息"
+     :visible.sync="dialogVisible"
+     width="30%"
+     :before-close="closeHandle"
+    >
+      <el-form
+       :model="userForm"
+       :rules="rules"
+       :inline="false"
+       label-width="180px"
+       class="demo-ruleForm"
+      >
+        <el-form-item label="姓名:" prop="name">
+          <el-input v-model="doctorForm.name" placeholder="请输入姓名" maxlength="20"/>
+        </el-form-item>
+
+        <el-form-item label="用户名:" prop="username">
+          <el-input v-model="userForm.username" placeholder="请输入账号" maxlength="20"/>
+        </el-form-item>
+
+        <el-form-item label="密码：" prop="password">
+          <el-input v-model="userForm.password" placeholder="请输入密码" maxlength="20"/>
+        </el-form-item>
+
+        <el-form-item label="手机号:" prop="telephone">
+          <el-input v-model="userForm.telephone" placeholder="请输入手机号" maxlength="11"/>
+        </el-form-item>
+
+        <el-form-item label="年龄:" prop="age">
+          <el-input v-model="userForm.age" placeholder="请输入手机号" maxlength="11"/>
+        </el-form-item>
+
+
+        <el-form-item label="性别:" prop="sex" >
+          <el-radio-group v-model="userForm.gender">
+            <el-radio label="男"></el-radio>
+            <el-radio label="女"></el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="所属医院：" prop="hospital">
+          <el-select  v-model="doctorForm.hid" placeholder="请选择" value-key="id">
+            <el-option
+                    v-for="h in hospitals"
+                    :key="h.id"
+                    :label="h.label"
+                    :value="`${h.id}|${h.name}`">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="所属部门" prop="department">
+          <el-input v-model="doctorForm.department" placeholder="部门" maxlength="11"/>
+        </el-form-item>
+
+        <el-form-item label="职称" prop="level">
+          <el-input v-model="doctorForm.level" placeholder="部门" maxlength="11"/>
+        </el-form-item>
+
+
+        <div class="subBox address">
+          <el-form-item>
+            <el-button  @click="closeHandle">
+              取消
+            </el-button>
+            <el-button
+              type="primary"
+              @click="submitForm(userForm, doctorForm)"
+            >
+              保存
+            </el-button>
+          </el-form-item>
+        </div>
+      </el-form>
+    </el-dialog>
+  </div>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="../../plugins/vue/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="../../plugins/element-ui/index.js"></script>
+    <!-- 引入axios -->
+    <script src="../../plugins/axios/axios.min.js"></script>
+    <script src="../../js/request.js"></script>
+    <script src="../../api/doctor.js"></script>
+    <script src="../../js/validate.js"></script>
+    <script src="../../api/hospital.js"></script>
+    <script src="../../api/user.js"></script>
+    <script>
+      new Vue({
+        el: '#doctor-app',
+        data() {
+          return {
+             input: '',
+             counts: 0,
+             page: 1,
+             pageSize: 5,
+             tableData : [],
+             id : '',
+             status : '',
+             dialogVisible: false,
+             userForm : {
+               'id':'',
+               'username':'youmeng',
+               'telephone': '18018594179',
+               'password':'',
+               'gender': '男',
+               'age':18,
+             },
+             doctorForm :{
+               'id':'',
+               'name': '吴大鹏',
+               'hid':'',
+               'department':'内科',
+               'level':'医师',
+             },
+             hospitals:[],
+          }
+        },
+        computed: {
+          rules() {
+            return {
+              //账号
+              username: [
+                {
+                  required: true, 'validator': checkUserName, trigger: 'blur'
+                }
+              ],
+              //姓名
+              // name: [{required: true, 'validator': checkName, 'trigger': 'blur'}],
+              // 'telephone': [{'required': true, 'validator': checkPhone, 'trigger': 'blur'}],
+            }
+          }
+        },
+        created() {
+          this.init()
+          this.user = JSON.parse(localStorage.getItem('userInfo')).username
+        },
+        mounted() {
+        },
+
+        methods: {
+          async init () {
+            const params = {
+              page: this.page,
+              pageSize: this.pageSize,
+              name: this.input ? this.input : undefined
+            }
+            await getDoctorList(params).then(res => {
+              if (String(res.code) === '1') {
+                this.tableData = res.data.records || []
+                this.counts = res.data.total
+              }
+            }).catch(err => {
+              this.$message.error('请求出错了：' + err)
+            })
+          },
+          handleQuery() {
+           this.page = 1;
+            this.init();
+          },
+           // 添加
+          addDoctorHandle () {
+            window.parent.menuHandle({
+              id: '2',
+              url: '/backend/page/doctor/add.html',
+              name: '添加医生'
+            },true)
+          },
+          editDoctorHandle(row){
+            console.log("row:",row)
+            this.dialogVisible = true
+
+            getHospitalById({'hid':row.hid}).then(res => {
+              if(res.code === 1){
+                let hospitalName = res.data.id + '|' + res.data.name
+                this.doctorForm.hid = hospitalName
+                console.log(this.doctorForm.hid)
+              }
+              else{
+                console.log("error")
+              }
+            }).catch(err => {
+              this.$message.error(err)
+            })
+
+            getOriginalUser({'uid':row.uid}).then(res => {
+              if(res.code === 1){
+                this.userForm.id = row.uid
+                this.userForm.username = res.data.username
+                this.userForm.telephone = res.data.telephone
+                this.userForm.password = res.data.password
+                this.userForm.gender = res.data.gender
+                this.userForm.age = res.data.age
+              }
+            }).catch(err => {
+              this.$message.error(err)
+            })
+
+            getOriginalDoctor({'did':row.id}).then(res =>{
+              if(res.code === 1) {
+                this.doctorForm.id = row.id
+                this.doctorForm.name = res.data.name
+                this.doctorForm.department = res.data.department
+                this.doctorForm.level = res.data.level
+              }
+            }).catch(err => {
+              this.$message.error(err)
+            })
+
+            getHospital().then(res => {
+              if(res.code === 1){
+                this.hospitals = res.data
+                console.log("this.hospitals:",this.hospitals)
+              }
+            })
+
+          },
+          //关闭编辑框
+          closeHandle(){
+            this.dialogVisible = false;
+          },
+          //删除一位医生信息
+          deleteHandle(row){
+              this.$confirm('此操作将永久删除该信息，是否确认？','提示',{
+                'confirmButtonText': '确定',
+                'cancelButtonText': '取消',
+                'type': 'warning'
+              }).then(()=>{
+                deleteUser({'id':row.uid}).then(res => {
+                  if(res.code === 1){
+                    deleteDoctor({'id':row.id}).then(res1 =>{
+                      if(res1.code === 1){
+                        this.$message.success("医生删除成功！")
+                        this.init()
+                      }
+                    })
+                  }
+                })
+              }).catch(err => {
+                this.$message.error("请求出错了!" + err)
+              })
+
+
+          },
+          submitForm(userForm, doctorForm){
+            editUserFinish(userForm).then(res => {
+              if(res.code === 1){
+
+                let [id, name] = doctorForm.hid.split('|')
+                doctorForm.hid = id
+                editDoctorFinish(doctorForm).then(res1 => {
+                  if(res1.code === 1){
+                    this.$message.success("医生信息修改成功!")
+                    this.init();
+                    this.dialogVisible = false
+                  }
+                })
+              }
+            }).catch(err => {
+              this.$message.error(err)
+            })
+          },
+          handleSizeChange (val) {
+            this.pageSize = val
+            this.init()
+          },
+          handleCurrentChange (val) {
+            this.page = val
+            this.init()
+          }
+        }
+      })
+    </script>
+</body>
+</html>

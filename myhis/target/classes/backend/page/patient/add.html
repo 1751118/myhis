@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <link rel="stylesheet" href="../../styles/common.css" />
+  <link rel="stylesheet" href="../../styles/page.css" />
+</head>
+<body>
+  <div class="addBrand-container" id="member-add-app">
+    <div class="container">
+      <el-form
+        :rules="rules"
+        :model="patientForm"
+        :inline="false"
+        label-width="180px"
+        class="demo-ruleForm"
+      >
+        <el-form-item label="姓名:" prop="name">
+          <el-input v-model="patientForm.name" placeholder="请输入姓名" maxlength="20"/>
+        </el-form-item>
+
+        <el-form-item label="用户名:" prop="username">
+          <el-input v-model="patientForm.username" placeholder="请输入账号" maxlength="20"/>
+        </el-form-item>
+
+        <el-form-item label="密码：" prop="password">
+          <el-input v-model="patientForm.password" placeholder="请输入密码" maxlength="20"/>
+        </el-form-item>
+
+        <el-form-item label="手机号:" prop="telephone">
+          <el-input v-model="patientForm.telephone" placeholder="请输入手机号" maxlength="11"/>
+        </el-form-item>
+
+        <el-form-item label="家庭地址:" prop="address">
+          <el-input v-model="patientForm.address" placeholder="请输入家庭地址" maxlength="50"/>
+        </el-form-item>
+
+        <el-form-item label="年龄:" prop="age">
+          <el-input v-model="patientForm.age" placeholder="请输入手机号" maxlength="11"/>
+        </el-form-item>
+
+
+        <el-form-item label="性别:" prop="sex" >
+          <el-radio-group v-model="patientForm.gender">
+            <el-radio label="男"></el-radio>
+            <el-radio label="女"></el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+        <div class="subBox address">
+          <el-form-item>
+            <el-button  @click="goBack()">
+              取消
+            </el-button>
+            <el-button
+              type="primary"
+              @click="submitForm(patientForm)"
+            >
+              保存
+            </el-button>
+          </el-form-item>
+        </div>
+      </el-form>
+    </div>
+  </div>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="../../plugins/vue/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="../../plugins/element-ui/index.js"></script>
+    <!-- 引入axios -->
+    <script src="../../plugins/axios/axios.min.js"></script>
+    <script src="../../js/request.js"></script>
+    <script src="../../api/patient.js"></script>
+    <script src="../../js/validate.js"></script>
+    <script src="../../js/index.js"></script>
+    <script src="../../api/hospital.js"></script>
+    <script src="../../api/user.js"></script>
+
+    <script>
+      const vm = new Vue({
+        el: '#member-add-app',
+        data() {
+          return {
+            id: '',
+            actionType : '',
+            patientForm :{
+              'name': '张三',
+              'address':'同济大学',
+              'username':'youmeng',
+              'telephone': '18018594179',
+              'password':'',
+              'gender': '男',
+              'age':18,
+            },
+            hospitals:[],
+          }
+        },
+        computed: {
+          rules() {
+            return {
+              //账号
+              username: [
+                {
+                  required: true, 'validator': checkUserName, trigger: 'blur'
+                }
+              ],
+              //姓名
+              name: [{required: true, 'validator': checkName, 'trigger': 'blur'}],
+              'telephone': [{'required': true, 'validator': checkPhone, 'trigger': 'blur'}],
+            }
+          }
+        },
+
+        //已搜索完所属医院，TODO：完成保存功能
+        methods: {
+          submitForm (patientForm) {
+            patientForm.username = patientForm.username
+            addPatient(patientForm).then(res => {
+              if (res.code === 1) {
+                this.patientForm = {
+                  'name': '张三',
+                  'address':'同济大学',
+                  'username':'youmeng',
+                  'telephone': '18018594179',
+                  'password':'',
+                  'gender': '男',
+                  'age':18,
+                };
+                this.$message.success('患者添加成功！')
+                setTimeout(() => {
+                  this.goBack()
+                }, 500)
+                // this.goBack()
+              } else {
+                this.$message.error(res.msg || '操作失败')
+                }
+            }).catch(err => {
+              this.$message.error('请求出错了：' + err)
+            })
+          },
+          goBack(){
+            window.parent.menuHandle({
+              id: '1',
+              url: '/backend/page/patient/list.html',
+              name: '患者管理'
+            },false)
+          }
+        }
+      })
+    </script>
+</body>
+</html>
