@@ -63,3 +63,5 @@ start slave;（开启一个线程跑 slave）
 
 因图片无法显示，若主从库配置讲解不清楚，可以自行去掉该配置，更改项目配置文件，换成单库即可。或者自行查阅资料，完成主从配置。
 
+项目演示地址：https://www.bilibili.com/video/BV1Du411a775/?vd_source=f0ace1255f5d873c3a5c27615e80a439
+
